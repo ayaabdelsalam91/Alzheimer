@@ -244,41 +244,5 @@ def train_lstm(TargetName ,X_, Y_,Trainseq_length, TestData , Testseq_length,RID
 
 
 
-def test_lstm(TargetName ,TestData , Testseq_length,RID):
-	Output = np.zeros((TestData.shape[0] , 51))
-	Output[:,0] = RID
-	n_steps = TestData.shape[1]
-	n_inputs = TestData.shape[2]
-	n_outputs = 1
-	X = tf.placeholder(tf.float32, [None, n_steps, n_inputs])
-	y = tf.placeholder(tf.float32, [None, n_steps, n_outputs])
-	seq_length = tf.placeholder(tf.int32, [None])
-
-	print TestData.shape , Testseq_length.shape
-	saver = tf.train.import_meta_graph(TargetName +'LSTM_model_withValidation.meta')
-
-	with tf.Session() as sess:
-		saver.restore(sess,  tf.train.latest_checkpoint('./'))
-		sess.run(tf.global_variables_initializer())
-		graph = tf.get_default_graph()
-		outputs_Last = graph.get_tensor_by_name('outputs_Last:0')
-		print outputs_Last
-
-		sequence = [0.] * 20*4
-		for iteration in range(300):
-				X_batch = np.array(sequence[-20*4:]).reshape(1, 20, 4)
-				seq = np.array([5])
-				print X_batch ,  seq.shape
-				y_pred = sess.run(outputs_Last, feed_dict={X: X_batch , seq_length:seq})
-				print y_pred
-	        
-		# for i in range(1):
-		# 	for j in range(50):
-		# 		testinput = TestData[i].reshape(1,20,TestData.shape[2])
-		# 		seq = Testseq_length[i].reshape(1,)
-		# 		print "hello " , testinput.shape , seq.shape
-		# 		y_pred =  sess.run(outputs_Last, feed_dict={X: testinput , seq_length: seq})
-		# 		print y_pred
-
 
 
