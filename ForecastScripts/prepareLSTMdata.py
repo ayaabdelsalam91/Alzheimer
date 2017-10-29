@@ -64,13 +64,13 @@ from sklearn.model_selection import train_test_split
 # FillinDataForForecasting("CDRSB","CDRSBFeaturesForecastLeaderBoardTS","LSTMDataCDRSBForecastLeaderBoard",multivariate=True,shift=True,Testing = True)
 
 
-getLSTMInput(  "LSTMDataVentriclesForecastLeaderBoardTrain","LSTMDataVentriclesForecastLeaderBoardTrainParsed" ,DiffTarget=True)
+getLSTMInput(  "LSTMDataVentriclesForecastLeaderBoardTrain","LSTMDataVentriclesForecastLeaderBoardTrainParsed" ,DiffTarget=False)
 getLSTMInput( "LSTMDataVentriclesForecastLeaderBoard","LSTMDataVentriclesForecastLeaderBoardParsed" , Testing=True )
 
 getLSTMInput(  "LSTMDataDXForecastLeaderBoardTrain","LSTMDataDXForecastLeaderBoardTrainParsed" ,DiffTarget=False)
 getLSTMInput( "LSTMDataDXForecastLeaderBoard","LSTMDataDXForecastLeaderBoardParsed" , Testing=True )
 
-getLSTMInput(  "LSTMDataADAS13ForecastLeaderBoardTrain","LSTMDataADAS13ForecastLeaderBoardTrainParsed" ,DiffTarget=True)
+getLSTMInput(  "LSTMDataADAS13ForecastLeaderBoardTrain","LSTMDataADAS13ForecastLeaderBoardTrainParsed" ,DiffTarget=False)
 getLSTMInput( "LSTMDataADAS13ForecastLeaderBoard","LSTMDataADAS13ForecastLeaderBoardParsed" , Testing=True )
 
 getLSTMInput(  "LSTMDataMMSEForecastLeaderBoardTrain","LSTMDataMMSEForecastLeaderBoardTrainParsed" ,DiffTarget=False ,shift=True) 

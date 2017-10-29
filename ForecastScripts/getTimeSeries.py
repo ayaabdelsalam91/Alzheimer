@@ -15,7 +15,7 @@ def getTimeSeries(TargetName, inputfile , OuputFile, multivariate=False):
 	# print data
 	dataframe = read_csv(data, names=None)
 	info=dataframe.values
-	print data , info.shape
+	print(data , info.shape)
 
 	columns = dataframe.columns.values
 	NumericCols =[]

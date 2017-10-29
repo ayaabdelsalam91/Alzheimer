@@ -9,7 +9,7 @@ def getDataOfIntrest(TargetName , inputfile , OuputFile, otherFeatures=None ):
 	data = '/Users/aya/Documents/Research/Alzheimer/tadpole_challenge/ForecastProcessed_data/'+inputfile+ '.csv'
 	dataframe = read_csv(data, names=None)
 	info = dataframe.values
-	print data , info.shape
+	print(data , info.shape)
 
 	if(TargetName=="DX"):
 		DX=  dataframe.columns.get_loc("DX")

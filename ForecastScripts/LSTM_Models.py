@@ -20,25 +20,24 @@ def unison_shuffled_copies(a, b):
 
 
 def loss_function(y, outputs,seq_length , alpha):
-	lasty = last_relevant(y, seq_length)
-	lastOutput = last_relevant(outputs, seq_length)
-	Lastloss = tf.reduce_sum(tf.abs(lasty -lastOutput))
-	AllExceptloss =  tf.reduce_sum(tf.abs(y -outputs)) - Lastloss
-
- 	return tf.reduce_mean(AllExceptloss*alpha +Lastloss*(1-alpha) )
+    lasty = last_relevant(y, seq_length)
+    lastOutput = last_relevant(outputs, seq_length)
+    Lastloss = tf.reduce_sum(tf.abs(lasty -lastOutput))
+    AllExceptloss =  tf.reduce_sum(tf.abs(y -outputs)) - Lastloss
+    return tf.reduce_mean(AllExceptloss*alpha +Lastloss*(1-alpha))
 
 
 
 def last_relevant(output, length):
-  batch_size = tf.shape(output)[0]
+    batch_size = tf.shape(output)[0]
 
-  max_length = tf.shape(output)[1]
-  out_size = int(output.get_shape()[2])
-  print batch_size , max_length , out_size
-  index = tf.range(0, batch_size) * max_length + (length - 1)
-  flat = tf.reshape(output, [-1, out_size])
-  relevant = tf.gather(flat, index)
-  return relevant
+    max_length = tf.shape(output)[1]
+    out_size = int(output.get_shape()[2])
+    print(batch_size , max_length , out_size)
+    index = tf.range(0, batch_size) * max_length + (length - 1)
+    flat = tf.reshape(output, [-1, out_size])
+    relevant = tf.gather(flat, index)
+    return relevant
 
 
 
@@ -47,10 +46,10 @@ def get_interval(MAE):
 
 def LSTM(TargetName , TrainInputFile , TestInputFile, Validation=False):
 
-	Traindata = '/Users/aya/Documents/Research/Alzheimer/tadpole_challenge/ForecastProcessed_data/'+TrainInputFile+'.csv'
+	Traindata = '/Users/Tim/Desktop/Alzheimer/ForecastProcessed_data/'+TrainInputFile+'.csv'
 	Traindataframe = read_csv(Traindata, names=None)
 	TrainInfo = Traindataframe.values
-	Testdata = '/Users/aya/Documents/Research/Alzheimer/tadpole_challenge/ForecastProcessed_data/'+TestInputFile+'.csv'
+	Testdata = '/Users/Tim/Desktop/Alzheimer/ForecastProcessed_data/'+TestInputFile+'.csv'
 	Testdataframe = read_csv(Testdata, names=None)
 	TestInfo =  Testdataframe.values
 	numberOfFeatures=0
@@ -128,7 +127,7 @@ def LSTM(TargetName , TrainInputFile , TestInputFile, Validation=False):
 
 
 def train_lstm(TargetName ,X_, Y_,Trainseq_length, TestData , Testseq_length,RID ,splits=None,
-	learning_rate = 0.0000001 ,n_neurons=30, n_layers = 2 , alpha=0.2,n_epochs=10):
+	learning_rate = 0.2 ,n_neurons=64, n_layers = 1 , alpha=0.8,n_epochs=30):
 	#Number of steps is the number of timeseries in this case its 5 2-1,3-2,4-3,5-4 and 6-5
 	n_steps = Y_.shape[1]
 	n_inputs = X_.shape[2]
@@ -190,20 +189,22 @@ def train_lstm(TargetName ,X_, Y_,Trainseq_length, TestData , Testseq_length,RID
 				acc_testACC = outputs_Last.eval(feed_dict={X: X_test, y: Y_test,  seq_length:seq_Test})
 
 				print("Epoch", epoch, "Train MAE =", acc_train, "Test MAE =", acc_test)
-				# print (acc_testy_Last ,acc_testACC )
+				#print(Y_train)
+				#print(X_train,np.count_nonzero(seq_Test),np.size(seq_Test), (seq_Test==0).sum(), seq_Train)
+				#print (acc_testy_Last ,acc_testACC )
 			MAE_values = MAE.eval(feed_dict={X: X_train, y: Y_train  ,  seq_length:seq_Train})
 			iterval_25 , interval_75 = get_interval(MAE_values)
 			saver.save(sess, "./"+TargetName +"LSTM_model_withValidation")
 	else:
 		with tf.Session() as sess:
 			init.run()
-			for epoch in range(2):
+			for epoch in range(n_epochs):
 				X_, Y_ = unison_shuffled_copies(X_,Y_)
 				sess.run(training_op, feed_dict={X: X_, y: Y_  ,  seq_length:Trainseq_length})
 				acc_train = accuracy.eval(feed_dict={X: X_, y: Y_  ,  seq_length:Trainseq_length})
 				print("Epoch", epoch, "Train MAE =", acc_train)
 			MAE_values = MAE.eval(feed_dict={X: X_, y: Y_  ,  seq_length:Trainseq_length})
-			iterval_25 , interval_75 = get_interval(MAE_values)
+			interval_25 , interval_75 = get_interval(MAE_values)
 			saver.save(sess, "./"+TargetName +"LSTM_model")
 			Output = np.zeros((TestData.shape[0] , 51))
 			Output_25 = np.zeros((TestData.shape[0] , 51))
@@ -217,8 +218,8 @@ def train_lstm(TargetName ,X_, Y_,Trainseq_length, TestData , Testseq_length,RID
 					X_batch = TestData[i].reshape(1, 20, n_inputs)
 					y_pred = sess.run(outputs_Lastvariable, feed_dict={X: X_batch , seq_length:seq})
 					Output[i,j+1] = TestData[i,seq[0]-1,0]  +  y_pred.flatten()[0]
-					Output_25[i,j+1] = TestData[i,seq[0]-1,0]  +  y_pred.flatten()[0] -interval_25
-					Output_75[i,j+1] = TestData[i,seq[0]-1,0]  +  y_pred.flatten()[0] +interval_75
+					Output_25[i,j+1] = TestData[i,seq[0]-1,0]  +  y_pred.flatten()[0] - interval_25
+					Output_75[i,j+1] = TestData[i,seq[0]-1,0]  +  y_pred.flatten()[0] + interval_75
 					if(seq[0]<20):
 						TestData[i , seq[0],0] =Output[i,j+1] 
 						seq[0]+=1
@@ -235,7 +236,7 @@ def train_lstm(TargetName ,X_, Y_,Trainseq_length, TestData , Testseq_length,RID
 
 
 	df = DataFrame(MAE_values,columns=["MAE"])
-	df.to_csv('/Users/aya/Documents/Research/Alzheimer/tadpole_challenge/ForecastProcessed_data/TrainingMAE.csv',index=False)
+	df.to_csv('/Users/Tim/Desktop/Alzheimer/ForecastProcessed_data/TrainingMAE.csv',index=False)
 
 
 

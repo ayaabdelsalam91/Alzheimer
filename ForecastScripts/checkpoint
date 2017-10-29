@@ -1,0 +1,2 @@
+model_checkpoint_path: "ADAS13LSTM_model_withValidation"
+all_model_checkpoint_paths: "ADAS13LSTM_model_withValidation"
