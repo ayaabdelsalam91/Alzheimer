@@ -43,7 +43,7 @@ def last_relevant(output, length):
 
 
 def get_interval(MAE):
-	return 0,0
+	return np.percentile(MAE,25),np.percentile(MAE,75)
 
 def LSTM(TargetName , TrainInputFile , TestInputFile, Validation=False):
 
