@@ -127,7 +127,7 @@ def LSTM(TargetName , TrainInputFile , TestInputFile, Validation=False):
 
 
 def train_lstm(TargetName ,X_, Y_,Trainseq_length, TestData , Testseq_length,RID ,splits=None,
-	learning_rate = 0.2 ,n_neurons=64, n_layers = 1 , alpha=0.8,n_epochs=30):
+	learning_rate = 0.001 ,n_neurons=32, n_layers = 3 , alpha=0.2,n_epochs=300):
 	#Number of steps is the number of timeseries in this case its 5 2-1,3-2,4-3,5-4 and 6-5
 	n_steps = Y_.shape[1]
 	n_inputs = X_.shape[2]
