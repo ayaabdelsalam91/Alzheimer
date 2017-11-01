@@ -11,10 +11,11 @@ from scipy.ndimage.interpolation import shift
 # np.set_printoptions(threshold='nan')
 
 
-def unison_shuffled_copies(a, b):
+def unison_shuffled_copies(a, b,c):
     assert len(a) == len(b)
+    assert len(a) == len(c)
     p = np.random.permutation(len(a))
-    return a[p], b[p]
+    return a[p], b[p] , c[p]
 
 
 
@@ -127,7 +128,7 @@ def LSTM(TargetName , TrainInputFile , TestInputFile, Validation=False):
 
 
 def train_lstm(TargetName ,X_, Y_,Trainseq_length, TestData , Testseq_length,RID ,splits=None,
-	learning_rate = 0.001 ,n_neurons=32, n_layers = 3 , alpha=0.2,n_epochs=300):
+	learning_rate = 0.001 ,n_neurons=32, n_layers = 3 , alpha=0.2,n_epochs=300,dropoutKeepProb=0.8):
 	#Number of steps is the number of timeseries in this case its 5 2-1,3-2,4-3,5-4 and 6-5
 	n_steps = Y_.shape[1]
 	n_inputs = X_.shape[2]
@@ -137,6 +138,7 @@ def train_lstm(TargetName ,X_, Y_,Trainseq_length, TestData , Testseq_length,RID
 	X = tf.placeholder(tf.float32, [None, n_steps, n_inputs])
 	y = tf.placeholder(tf.float32, [None, n_steps, n_outputs])
 	seq_length = tf.placeholder(tf.int32, [None])
+	keep_prob = tf.placeholder_with_default(dropoutKeepProb, [])
 
 	#create lstm with 2 layers each with 64 hidden units
 	lstm_cells = [tf.contrib.rnn.BasicLSTMCell(num_units=n_neurons)
@@ -156,10 +158,10 @@ def train_lstm(TargetName ,X_, Y_,Trainseq_length, TestData , Testseq_length,RID
 
 
 	outputs, states = tf.nn.dynamic_rnn(multi_cell, X, dtype=tf.float32, sequence_length=seq_length)
-	
-	loss = loss_function(y, outputs,seq_length,alpha)
+	rnn_outputs = tf.nn.dropout(outputs, keep_prob)
+	loss = loss_function(y, rnn_outputs,seq_length,alpha)
 	y_Last = last_relevant(y, seq_length)
-	outputs_Last = last_relevant(outputs, seq_length)
+	outputs_Last = last_relevant(rnn_outputs, seq_length)
 	outputs_Lastvariable = tf.identity(outputs_Last, name='outputs_Last')
 	accuracy = tf.reduce_mean(tf.abs(y_Last-outputs_Last))
 	MAE = tf.abs(y_Last-outputs_Last)
@@ -180,8 +182,10 @@ def train_lstm(TargetName ,X_, Y_,Trainseq_length, TestData , Testseq_length,RID
 		with tf.Session() as sess:
 			init.run()
 			for epoch in range(n_epochs):
-				X_train , Y_train = unison_shuffled_copies(X_train,Y_train)
-				X_test , Y_test = unison_shuffled_copies(X_test,Y_test)
+
+				X_train , Y_train,seq_Train = unison_shuffled_copies(X_train,Y_train,seq_Train)
+				X_test , Y_test,seq_Test = unison_shuffled_copies(X_test,Y_test,seq_Test)
+
 				sess.run(training_op, feed_dict={X: X_train, y: Y_train  ,  seq_length:seq_Train})
 				acc_train = accuracy.eval(feed_dict={X: X_train, y: Y_train  ,  seq_length:seq_Train})
 				acc_test = accuracy.eval(feed_dict={X: X_test, y: Y_test,  seq_length:seq_Test})
@@ -199,42 +203,62 @@ def train_lstm(TargetName ,X_, Y_,Trainseq_length, TestData , Testseq_length,RID
 		with tf.Session() as sess:
 			init.run()
 			for epoch in range(n_epochs):
-				X_, Y_ = unison_shuffled_copies(X_,Y_)
+				X_, Y_,Trainseq_length = unison_shuffled_copies(X_,Y_,Trainseq_length)
 				sess.run(training_op, feed_dict={X: X_, y: Y_  ,  seq_length:Trainseq_length})
 				acc_train = accuracy.eval(feed_dict={X: X_, y: Y_  ,  seq_length:Trainseq_length})
 				print("Epoch", epoch, "Train MAE =", acc_train)
 			MAE_values = MAE.eval(feed_dict={X: X_, y: Y_  ,  seq_length:Trainseq_length})
 			interval_25 , interval_75 = get_interval(MAE_values)
 			saver.save(sess, "./"+TargetName +"LSTM_model")
-			Output = np.zeros((TestData.shape[0] , 51))
-			Output_25 = np.zeros((TestData.shape[0] , 51))
-			Output_75 = np.zeros((TestData.shape[0] , 51))
-			Output[:,0] = RID
-			Output_25[:,0] = RID
-			Output_75[:,0] = RID
+
+			OutputZero = np.zeros((TestData.shape[0]*50, 4))
 			for i in range(TestData.shape[0]):
 				seq = np.array([Testseq_length[i]])
 				for j in range(50):
 					X_batch = TestData[i].reshape(1, 20, n_inputs)
 					y_pred = sess.run(outputs_Lastvariable, feed_dict={X: X_batch , seq_length:seq})
-					Output[i,j+1] = TestData[i,seq[0]-1,0]  +  y_pred.flatten()[0]
-					Output_25[i,j+1] = TestData[i,seq[0]-1,0]  +  y_pred.flatten()[0] - interval_25
-					Output_75[i,j+1] = TestData[i,seq[0]-1,0]  +  y_pred.flatten()[0] + interval_75
-					if(seq[0]<20):
-						TestData[i , seq[0],0] =Output[i,j+1] 
-						seq[0]+=1
+				
+					OutputZero[i*50+j,0] = RID[i]
+					OutputZero[i*50+j,1] =  y_pred.flatten()[0]
+					OutputZero[i*50+j,2] =  y_pred.flatten()[0] - interval_25
+					OutputZero[i*50+j,3] =  y_pred.flatten()[0] + interval_75
 
+					if(seq[0]<20):
+						TestData[i , seq[0],0] =OutputZero[i*50+j,1] 
+						seq[0]+=1
 					else:
-						newValue = [0]*n_inputs
-						newValue[0] =  y_pred.flatten()[0]
 						np.roll(TestData[i], -1, axis=0)
 						TestData[i] =np.roll(TestData[i], -1, axis=0)
-						TestData[i , -1,0] = Output[i,j+1] 
+						TestData[i , -1,0] =  y_pred.flatten()[0]
 						for ind in range(1,n_inputs):
 							TestData[i , -1,ind] = 0
 
+			df = DataFrame(OutputZero,columns=["RID" , TargetName , "-25" , "+75"])
+			df.to_csv('/Users/Tim/Desktop/Alzheimer/ForecastProcessed_data/'+TargetName+ 'LeaderboradOutputZeroPadding.csv',index=False)
+			
+			OutputPersistence = np.zeros((TestData.shape[0]*50, 4))
+			for i in range(TestData.shape[0]):
+					seq = np.array([Testseq_length[i]])
+					for j in range(50):
+						X_batch = TestData[i].reshape(1, 20, n_inputs)
+						y_pred = sess.run(outputs_Lastvariable, feed_dict={X: X_batch , seq_length:seq})
+						OutputPersistence[i*50+j,0] = RID[i]
+						OutputPersistence[i*50+j,1] =  y_pred.flatten()[0]
+						OutputPersistence[i*50+j,2] =  y_pred.flatten()[0] - interval_25
+						OutputPersistence[i*50+j,3] =  y_pred.flatten()[0] + interval_75
 
+						if(seq[0]<20):
+							TestData[i ,seq[0],0] =OutputPersistence[i*50+j,1]
+							seq[0]+=1
 
+						else:
+							np.roll(TestData[i], -1, axis=0)
+							TestData[i] =np.roll(TestData[i], -1, axis=0)
+							TestData[i , -1,0] = OutputPersistence[i*50+j,1]
+							for ind in range(1,n_inputs):
+								TestData[i , -1,ind] = TestData[i ,-2,ind]
+			df = DataFrame(OutputPersistence,columns=["RID" , TargetName , "-25" , "+75"])
+			df.to_csv('/Users/Tim/Desktop/Alzheimer/ForecastProcessed_data/'+TargetName+ 'LeaderboradOutputPersistence.csv',index=False)
 	df = DataFrame(MAE_values,columns=["MAE"])
 	df.to_csv('/Users/Tim/Desktop/Alzheimer/ForecastProcessed_data/TrainingMAE.csv',index=False)
 
