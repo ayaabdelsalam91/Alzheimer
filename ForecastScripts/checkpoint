@@ -1,2 +1,2 @@
-model_checkpoint_path: "VentriclesLSTM_model_withValidation"
-all_model_checkpoint_paths: "VentriclesLSTM_model_withValidation"
+model_checkpoint_path: "DXLSTM_model"
+all_model_checkpoint_paths: "DXLSTM_model"

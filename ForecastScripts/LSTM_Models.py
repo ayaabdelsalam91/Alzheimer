@@ -128,7 +128,7 @@ def LSTM(TargetName , TrainInputFile , TestInputFile, Validation=False):
 
 
 def train_lstm(TargetName ,X_, Y_,Trainseq_length, TestData , Testseq_length,RID ,splits=None,
-	learning_rate = 0.001 ,n_neurons=32, n_layers = 3 , alpha=0.2,n_epochs=300,dropoutKeepProb=0.8):
+	learning_rate = 0.2 ,n_neurons=64, n_layers = 2 , alpha=0.15,n_epochs=300,dropoutKeepProb=1.0):
 	#Number of steps is the number of timeseries in this case its 5 2-1,3-2,4-3,5-4 and 6-5
 	n_steps = Y_.shape[1]
 	n_inputs = X_.shape[2]
@@ -182,9 +182,12 @@ def train_lstm(TargetName ,X_, Y_,Trainseq_length, TestData , Testseq_length,RID
 		with tf.Session() as sess:
 			init.run()
 			for epoch in range(n_epochs):
-
-				X_train , Y_train,seq_Train = unison_shuffled_copies(X_train,Y_train,seq_Train)
-				X_test , Y_test,seq_Test = unison_shuffled_copies(X_test,Y_test,seq_Test)
+				old = seq_Train
+				X_train , Y_train, seq_Train = unison_shuffled_copies(X_train,Y_train,seq_Train)
+				#X_train, Y_train, wtf = unison_shuffled_copies(X_train, Y_train, seq_Train)
+				#print(old==seq_Train)
+				#print(wtf==seq_Train)
+				X_test , Y_test, seq_Test = unison_shuffled_copies(X_test,Y_test,seq_Test)
 
 				sess.run(training_op, feed_dict={X: X_train, y: Y_train  ,  seq_length:seq_Train})
 				acc_train = accuracy.eval(feed_dict={X: X_train, y: Y_train  ,  seq_length:seq_Train})

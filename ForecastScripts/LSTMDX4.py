@@ -80,9 +80,9 @@ def last_relevant(output, length):
 
 def mergeFiles(inFileDX ,  inFileCDRSB , inFileMMSE, isTesting=False):
 
-	dataDX = '/Users/aya/Documents/Research/Alzheimer/tadpole_challenge/ForecastProcessed_data/'+inFileDX+'.csv'
-	dataCDRSB = '/Users/aya/Documents/Research/Alzheimer/tadpole_challenge/ForecastProcessed_data/'+inFileCDRSB+'.csv'
-	dataMMSE = '/Users/aya/Documents/Research/Alzheimer/tadpole_challenge/ForecastProcessed_data/'+inFileMMSE+'.csv'
+	dataDX = '/Users/Tim/Desktop/Alzheimer/ForecastProcessed_data/'+inFileDX+'.csv'
+	dataCDRSB = '/Users/Tim/Desktop/Alzheimer/ForecastProcessed_data/'+inFileCDRSB+'.csv'
+	dataMMSE = '/Users/Tim/Desktop/Alzheimer/ForecastProcessed_data/'+inFileMMSE+'.csv'
 
 	dataframeDX = read_csv(dataDX, names=None)
 	dataframeCDRSB = read_csv(dataCDRSB, names=None)
@@ -94,12 +94,12 @@ def mergeFiles(inFileDX ,  inFileCDRSB , inFileMMSE, isTesting=False):
 
 	dataframeCDRSB = dataframeCDRSB.values
 	dataframeMMSE = dataframeMMSE.values
-	numberOfFeaturesCDRSB = (dataframeCDRSB.shape[1]-2)/19
-	numberOfFeaturesMMSE = (dataframeMMSE.shape[1]-2)/19
-	numberOfFeaturesDx =  (dataframeDX.shape[1]-2)/19
+	numberOfFeaturesCDRSB = int((dataframeCDRSB.shape[1]-2)/19)
+	numberOfFeaturesMMSE = int((dataframeMMSE.shape[1]-2)/19)
+	numberOfFeaturesDx =  int((dataframeDX.shape[1]-2)/19)
 	# print numberOfFeaturesDx ,numberOfFeaturesCDRSB ,  numberOfFeaturesMMSE 
 	# print dataframeDX.shape, dataframeCDRSB.shape , dataframeMMSE.shape
-	numberOfFeatures = numberOfFeaturesCDRSB +  numberOfFeaturesMMSE+ numberOfFeaturesDx
+	numberOfFeatures = int(numberOfFeaturesCDRSB +  numberOfFeaturesMMSE+ numberOfFeaturesDx)
 
 	if(not isTesting):
 
@@ -108,21 +108,21 @@ def mergeFiles(inFileDX ,  inFileCDRSB , inFileMMSE, isTesting=False):
 		input[:,-1] = dataframeDX[:,-1]
 		for i in range(0, input.shape[0]):
 			for step in range (19):
-				for DxFeature in range(numberOfFeaturesDx):
+				for DxFeature in range(int(numberOfFeaturesDx)):
 					# print "DX" ,  1+DxFeature+step*numberOfFeatures  , 1+step*numberOfFeaturesDx+DxFeature
 					input[i,1+DxFeature+step*numberOfFeatures]=dataframeDX[i,1+step*numberOfFeaturesDx+DxFeature]
 				# print "DX" ,  1+numberOfFeaturesDx+step*numberOfFeatures   , 1+step*numberOfFeaturesDx+DxFeature
-				for CDRSBFeature in range(numberOfFeaturesCDRSB):
+				for CDRSBFeature in range(int(numberOfFeaturesCDRSB)):
 					input[i,1+numberOfFeaturesDx+CDRSBFeature+step*numberOfFeatures ] = dataframeCDRSB[i,1+step*numberOfFeaturesCDRSB+CDRSBFeature]
-				for MMSEFeature in range(numberOfFeaturesMMSE):
+				for MMSEFeature in range(int(numberOfFeaturesMMSE)):
 					input[i,1+numberOfFeaturesDx+numberOfFeaturesCDRSB + MMSEFeature+step*numberOfFeatures ] = dataframeMMSE[i,1+step*numberOfFeaturesMMSE+MMSEFeature]
 		cols=["RID"]
 		for i in range(19):
-			for DxFeature in range(numberOfFeaturesDx):
+			for DxFeature in range(int(numberOfFeaturesDx)):
 				cols.append("DX_f_"+str(DxFeature)+"_"+str(i))
-			for CDRSBFeature in range(numberOfFeaturesCDRSB):
+			for CDRSBFeature in range(int(numberOfFeaturesCDRSB)):
 				cols.append("CDRSB_"+str(CDRSBFeature)+str(i+1))
-			for MMSEFeature in range(numberOfFeaturesMMSE):
+			for MMSEFeature in range(int(numberOfFeaturesMMSE)):
 				cols.append("MMSE_"+str(MMSEFeature)+str(i+1))
 		cols.append("Target")
 		# print "train col" ,  len(cols)
@@ -131,59 +131,59 @@ def mergeFiles(inFileDX ,  inFileCDRSB , inFileMMSE, isTesting=False):
 		input[:,0] = dataframeDX[:,0]
 		for i in range(0, input.shape[0]):
 			for step in range (19):
-				for DxFeature in range(numberOfFeaturesDx):
+				for DxFeature in range(int(numberOfFeaturesDx)):
 					# print "DX" ,  1+DxFeature+step*numberOfFeatures  , 1+step*numberOfFeaturesDx+DxFeature
 					input[i,1+DxFeature+step*numberOfFeatures]=dataframeDX[i,1+step*numberOfFeaturesDx+DxFeature]
 				# print "DX" ,  1+numberOfFeaturesDx+step*numberOfFeatures   , 1+step*numberOfFeaturesDx+DxFeature
-				for CDRSBFeature in range(numberOfFeaturesCDRSB):
+				for CDRSBFeature in range(int(numberOfFeaturesCDRSB)):
 					input[i,1+numberOfFeaturesDx+CDRSBFeature+step*numberOfFeatures ] = dataframeCDRSB[i,1+step*numberOfFeaturesCDRSB+CDRSBFeature]
-				for MMSEFeature in range(numberOfFeaturesMMSE):
+				for MMSEFeature in range(int(numberOfFeaturesMMSE)):
 					input[i,1+numberOfFeaturesDx+numberOfFeaturesCDRSB + MMSEFeature+step*numberOfFeatures ] = dataframeMMSE[i,1+step*numberOfFeaturesMMSE+MMSEFeature]
 		cols=["RID"]
 		for i in range(19):
-			for DxFeature in range(numberOfFeaturesDx):
+			for DxFeature in range(int(numberOfFeaturesDx)):
 				cols.append("DX_f_"+str(DxFeature)+"_"+str(i))
-			for CDRSBFeature in range(numberOfFeaturesCDRSB):
+			for CDRSBFeature in range(int(numberOfFeaturesCDRSB)):
 				cols.append("CDRSB_"+str(CDRSBFeature)+str(i+1))
-			for MMSEFeature in range(numberOfFeaturesMMSE):
+			for MMSEFeature in range(int(numberOfFeaturesMMSE)):
 				cols.append("MMSE_"+str(MMSEFeature)+str(i+1))
 		# print "test col" , len(cols)
 	df = DataFrame(input , columns = cols)
 	if(isTesting):
-		df.to_csv('/Users/aya/Documents/Research/Alzheimer/tadpole_challenge/ForecastProcessed_data/LSTMParsedTestDataTempDX_andFeatures.csv',index=False)
+		df.to_csv('/Users/Tim/Desktop/Alzheimer/ForecastProcessed_data/LSTMParsedTestDataTempDX_andFeatures.csv',index=False)
 	else:
-		df.to_csv('/Users/aya/Documents/Research/Alzheimer/tadpole_challenge/ForecastProcessed_data/LSTMParsedTrainDataTempDX_andFeatures.csv',index=False)
+		df.to_csv('/Users/Tim/Desktop/Alzheimer/ForecastProcessed_data/LSTMParsedTrainDataTempDX_andFeatures.csv',index=False)
 	return df , numberOfFeaturesDx ,  numberOfFeaturesCDRSB  ,  numberOfFeaturesMMSE
 
 
 
-def LSTMDX(TrainDX,TrainCDRSB, TrainMMSE , TestDX,TestCDRSB,TestMMSE ,  Validation=False):
-	# TrainDataframe , numberOfFeaturesDxTrain, numberOfFeaturesCDRSBTrain  ,  numberOfFeaturesMMSETrain    =mergeFiles(TrainDX , TrainCDRSB ,TrainMMSE)
-	# TestDataframe, numberOfFeaturesDxTest ,  numberOfFeaturesCDRSBTest  ,  numberOfFeaturesMMSETest   =mergeFiles(TestDX , TestCDRSB , TestMMSE ,isTesting=True)
+def LSTMDX(TrainDX,TrainCDRSB, TrainMMSE , TestDX,TestCDRSB,TestMMSE , Validation=False):
+	TrainDataframe , numberOfFeaturesDxTrain, numberOfFeaturesCDRSBTrain  ,  numberOfFeaturesMMSETrain    =mergeFiles(TrainDX , TrainCDRSB ,TrainMMSE)
+	TestDataframe, numberOfFeaturesDxTest ,  numberOfFeaturesCDRSBTest  ,  numberOfFeaturesMMSETest   =mergeFiles(TestDX , TestCDRSB , TestMMSE ,isTesting=True)
 
 	################################ Comment
-	TrainData = '/Users/aya/Documents/Research/Alzheimer/tadpole_challenge/ForecastProcessed_data/LSTMParsedTrainDataTempDX_andFeatures.csv'
-	TestData ='/Users/aya/Documents/Research/Alzheimer/tadpole_challenge/ForecastProcessed_data/LSTMParsedTestDataTempDX_andFeatures.csv'
+	#TrainData = '/Users/Tim/Desktop/Alzheimer/ForecastProcessed_data/LSTMParsedTrainDataTempDX_andFeatures.csv'
+	#TestData ='/Users/Tim/Desktop/Alzheimer/ForecastProcessed_data/LSTMParsedTestDataTempDX_andFeatures.csv'
 
-	TrainDataframe = read_csv(TrainData, names=None)
-	TestDataframe = read_csv(TestData, names=None)
-	numberOfFeaturesDxTest = 2 
-	numberOfFeaturesCDRSBTest =6 
-	numberOfFeaturesMMSETest = 7
+	#TrainDataframe = read_csv(TrainData, names=None)
+	#TestDataframe = read_csv(TestData, names=None)
+	#numberOfFeaturesDxTest = 2
+	#numberOfFeaturesCDRSBTest =6
+	#numberOfFeaturesMMSETest = 7
 	###########################################
 
 	TrainInfo=TrainDataframe.values
 	# print TrainInfo[-1,:]
 	TestInfo=TestDataframe.values
 	numberOfFeatures=(TrainInfo.shape[1]-2)/19
-	print numberOfFeatures , TrainDataframe.shape , TestDataframe.shape
+	#print numberOfFeatures , TrainDataframe.shape , TestDataframe.shape
 	################### Training Data ##############################
 	TrainOutput = TrainInfo[:,-1]
 	TrainData = TrainInfo[:,1:-1]
 	Trainseq_length=[]
 	for i in range(TrainData.shape[0]):
 		seq=0
-		for j in range (0,TrainData.shape[1],numberOfFeatures):
+		for j in range (0,TrainData.shape[1],int(numberOfFeatures)):
 			if(TrainData[i,j]!=0):
 				seq+=1
 		Trainseq_length.append(seq)
@@ -194,7 +194,7 @@ def LSTMDX(TrainDX,TrainCDRSB, TrainMMSE , TestDX,TestCDRSB,TestMMSE ,  Validati
 	for i in range (TrainOutput.shape[0]):
 		for j in range(Trainseq_length[i]):
 			CompleteTrainOutput[i,j,:] =(Map(TrainOutput[i]))
-	TrainData =  TrainData.reshape((TrainData.shape[0], 19 ,numberOfFeatures ))
+	TrainData =  TrainData.reshape((int(TrainData.shape[0]), 19 ,int(numberOfFeatures) ))
 		################### Testing Data ##############################
 
 
@@ -202,12 +202,12 @@ def LSTMDX(TrainDX,TrainCDRSB, TrainMMSE , TestDX,TestCDRSB,TestMMSE ,  Validati
 	Testseq_length=[]
 	for i in range(TestData.shape[0]):
 		seq=0
-		for j in range (0,TestData.shape[1],numberOfFeatures):
+		for j in range (0,TestData.shape[1],int(numberOfFeatures)):
 			if(TestData[i,j]!=0):
 				seq+=1
 		Testseq_length.append(seq)
 	Testseq_length = np.array(Testseq_length)
-	TestData =  TestData.reshape((TestData.shape[0], 19 ,numberOfFeatures ))
+	TestData =  TestData.reshape((int(TestData.shape[0]), 19 ,int(numberOfFeatures) ))
 	#print TrainData.shape , CompleteTrainOutput.shape , Trainseq_length.shape , TestData.shape , Testseq_length.shape
 	RID =TestInfo[:,0]
 
@@ -243,7 +243,7 @@ def getPrediction(output):
 
 def train_lstm(TargetName ,X_, Y_,Trainseq_length, TestData , Testseq_length,RID, 
 				numberOfFeaturesDxTest ,  numberOfFeaturesCDRSBTest  ,  numberOfFeaturesMMSETest ,splits=None,
-				learning_rate = 0.05 ,n_neurons=64, n_layers = 2 , alpha=0.2,n_epochs=200 , dropoutKeepProb=0.8):
+				learning_rate = 0.1 ,n_neurons=64, n_layers = 1 , alpha=0.2,n_epochs=300 , dropoutKeepProb=0.8):
 	#Number of steps is the number of timeseries in this case its 5 2-1,3-2,4-3,5-4 and 6-5
 	n_steps = Y_.shape[1]
 	n_inputs = X_.shape[2]
@@ -313,8 +313,9 @@ def train_lstm(TargetName ,X_, Y_,Trainseq_length, TestData , Testseq_length,RID
 		with tf.Session() as sess:
 			init.run()
 			for epoch in range(n_epochs):
-				X_train , Y_train , seq_Train = unison_shuffled_copies(X_train,Y_train,seq_Train)
-				X_test , Y_test , seq_Test= unison_shuffled_copies(X_test,Y_test,seq_Test)
+				#X_train , Y_train , seq_Train = unison_shuffled_copies(X_train,Y_train,seq_Train)
+				X_train, Y_train, wtf = unison_shuffled_copies(X_train, Y_train, seq_Train)
+				#X_test , Y_test , seq_Test= unison_shuffled_copies(X_test,Y_test,seq_Test)
 
 				sess.run(training_op, feed_dict={X: X_train, y: Y_train  ,  seq_length:seq_Train})
 				last_y_ = last_y.eval(feed_dict={X: X_train, y: Y_train  ,  seq_length:seq_Train})
@@ -377,7 +378,7 @@ def train_lstm(TargetName ,X_, Y_,Trainseq_length, TestData , Testseq_length,RID
 								TestData[i , -1,ind] = 0
 
 			df = DataFrame(OutputZero,columns=["RID" , "CN" , "MCI" , "AD"])
-			df.to_csv('/Users/aya/Documents/Research/Alzheimer/tadpole_challenge/ForecastProcessed_data/DXLeaderboradOutputZeroPadding.csv',index=False)
+			df.to_csv('/Users/Tim/Desktop/Alzheimer/ForecastProcessed_data/DXLeaderboradOutputZeroPadding.csv',index=False)
 			OutputPersistence = np.zeros((TestData.shape[0]*50, 4))
 			for i in range(TestData.shape[0]):
 					seq = np.array([Testseq_length[i]])
@@ -412,7 +413,7 @@ def train_lstm(TargetName ,X_, Y_,Trainseq_length, TestData , Testseq_length,RID
 								if(ind!=1 and ind!=2 and ind!=2+numberOfFeaturesCDRSBTest):
 									TestData[i , -1,ind] = TestData[i ,-2,ind]
 			df = DataFrame(OutputPersistence,columns=["RID" , "CN" , "MCI" , "AD"])
-			df.to_csv('/Users/aya/Documents/Research/Alzheimer/tadpole_challenge/ForecastProcessed_data/DXLeaderboradOutputPersistence.csv',index=False)
+			df.to_csv('/Users/Tim/Desktop/Alzheimer/ForecastProcessed_data/DXLeaderboradOutputPersistence.csv',index=False)
 
 
 

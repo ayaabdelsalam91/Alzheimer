@@ -2,17 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="79345998-16b5-4ac3-ba0b-89dbad23b5f5" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ForecastProcessed_data/LSTMDataADAS13ForecastLeaderBoardTrainParsed.csv" afterPath="$PROJECT_DIR$/ForecastProcessed_data/LSTMDataADAS13ForecastLeaderBoardTrainParsed.csv" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ForecastProcessed_data/LSTMDataVentriclesForecastLeaderBoardParsed.csv" afterPath="$PROJECT_DIR$/ForecastProcessed_data/LSTMDataVentriclesForecastLeaderBoardParsed.csv" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ForecastProcessed_data/LSTMDataVentriclesForecastLeaderBoardTrainParsed.csv" afterPath="$PROJECT_DIR$/ForecastProcessed_data/LSTMDataVentriclesForecastLeaderBoardTrainParsed.csv" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ForecastProcessed_data/TrainingMAE.csv" afterPath="$PROJECT_DIR$/ForecastProcessed_data/TrainingMAE.csv" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ForecastScripts/LSTM_ModelsOld.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ForecastScripts/CallLSTMs.py" afterPath="$PROJECT_DIR$/ForecastScripts/CallLSTMs.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ForecastScripts/LSTMDX4.py" afterPath="$PROJECT_DIR$/ForecastScripts/LSTMDX4.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ForecastScripts/LSTM_Models.py" afterPath="$PROJECT_DIR$/ForecastScripts/LSTM_Models.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ForecastScripts/getLSTMTrainingandTesting.py" afterPath="$PROJECT_DIR$/ForecastScripts/getLSTMTrainingandTesting.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ForecastScripts/getTimeSeries.py" afterPath="$PROJECT_DIR$/ForecastScripts/getTimeSeries.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ForecastScripts/getVentriclesAndADASData.py" afterPath="$PROJECT_DIR$/ForecastScripts/getVentriclesAndADASData.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ForecastScripts/prepareLSTMdata.py" afterPath="$PROJECT_DIR$/ForecastScripts/prepareLSTMdata.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TADPOLE_D1_D2_Dict.csv" afterPath="$PROJECT_DIR$/TADPOLE_D1_D2_Dict.csv" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ForecastScripts/checkpoint" afterPath="$PROJECT_DIR$/ForecastScripts/checkpoint" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -27,8 +22,8 @@
       <file leaf-file-name="prepareLSTMdata.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ForecastScripts/prepareLSTMdata.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="158">
-              <caret line="69" column="46" lean-forward="false" selection-start-line="69" selection-start-column="46" selection-end-line="69" selection-end-column="46" />
+            <state relative-caret-position="107">
+              <caret line="69" column="34" lean-forward="false" selection-start-line="69" selection-start-column="34" selection-end-line="69" selection-end-column="34" />
               <folding>
                 <element signature="e#0#28#0" expanded="true" />
               </folding>
@@ -36,25 +31,18 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="getLSTMTrainingandTesting.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="getLSTMTrainingandTesting.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ForecastScripts/getLSTMTrainingandTesting.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="221">
-              <caret line="16" column="44" lean-forward="false" selection-start-line="16" selection-start-column="44" selection-end-line="16" selection-end-column="44" />
+            <state relative-caret-position="74">
+              <caret line="54" column="127" lean-forward="false" selection-start-line="54" selection-start-column="127" selection-end-line="54" selection-end-column="127" />
               <folding>
                 <element signature="e#0#28#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="CallLSTMs.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ForecastScripts/CallLSTMs.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="17">
-              <caret line="1" column="28" lean-forward="true" selection-start-line="1" selection-start-column="28" selection-end-line="1" selection-end-column="28" />
-              <folding>
-                <element signature="e#0#18#0" expanded="true" />
+                <element signature="e#403#1700#0" expanded="false" />
+                <element signature="e#1835#4321#0" expanded="false" />
+                <element signature="e#4414#7976#0" expanded="false" />
+                <element signature="e#8088#9773#0" expanded="false" />
+                <element signature="e#9893#13413#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -63,8 +51,8 @@
       <file leaf-file-name="LSTM_Models.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ForecastScripts/LSTM_Models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="140">
-              <caret line="154" column="46" lean-forward="false" selection-start-line="154" selection-start-column="46" selection-end-line="154" selection-end-column="46" />
+            <state relative-caret-position="-1239">
+              <caret line="130" column="23" lean-forward="false" selection-start-line="130" selection-start-column="23" selection-end-line="130" selection-end-column="23" />
               <folding>
                 <element signature="e#0#28#0" expanded="true" />
               </folding>
@@ -72,12 +60,49 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="LSTM_ModelsOld.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/ForecastScripts/LSTM_ModelsOld.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="105">
+              <caret line="120" column="49" lean-forward="true" selection-start-line="120" selection-start-column="49" selection-end-line="120" selection-end-column="49" />
+              <folding>
+                <element signature="e#0#28#0" expanded="true" />
+                <element signature="e#489#774#0" expanded="false" />
+                <element signature="e#816#1140#0" expanded="false" />
+                <element signature="e#1170#1223#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="CallLSTMs.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ForecastScripts/CallLSTMs.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="153">
+              <caret line="9" column="76" lean-forward="true" selection-start-line="9" selection-start-column="76" selection-end-line="9" selection-end-column="76" />
+              <folding>
+                <element signature="e#0#18#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
     </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>print</find>
       <find>'/Users/aya/Documents/Research/Alzheimer/tadpole_challenge/ForecastProcessed_data/'</find>
+      <find>print</find>
+      <find>shuffle</find>
+      <find>numberofFeaturesDx</find>
+      <find>validation</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -86,20 +111,21 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/ForecastScripts/CallLSTMs.py" />
         <option value="$PROJECT_DIR$/ForecastScripts/getVentriclesAndADASData.py" />
         <option value="$PROJECT_DIR$/ForecastScripts/getTimeSeries.py" />
         <option value="$PROJECT_DIR$/ForecastScripts/prepareLSTMdata.py" />
-        <option value="$PROJECT_DIR$/ForecastScripts/LSTM_Models.py" />
         <option value="$PROJECT_DIR$/ForecastScripts/getLSTMTrainingandTesting.py" />
+        <option value="$PROJECT_DIR$/ForecastScripts/LSTM_Models.py" />
+        <option value="$PROJECT_DIR$/ForecastScripts/LSTM_ModelsOld.py" />
+        <option value="$PROJECT_DIR$/ForecastScripts/CallLSTMs.py" />
+        <option value="$PROJECT_DIR$/ForecastScripts/LSTMDX4.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-8" />
-    <option name="y" value="-8" />
+    <option name="x" value="-7" />
     <option name="width" value="1612" />
-    <option name="height" value="835" />
+    <option name="height" value="826" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
@@ -334,7 +360,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1612" height="835" extended-state="0" />
+    <frame x="-7" y="0" width="1612" height="826" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.12628865" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -342,19 +368,30 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32905984" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.33333334" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.23907454" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2390464" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.22686376" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32905984" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.12628865" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.23907454" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.22686376" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
@@ -384,15 +421,15 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/ForecastScripts/LSTM_Models.py</url>
-          <line>128</line>
-          <option name="timeStamp" value="1" />
+          <url>file://$PROJECT_DIR$/ForecastScripts/CallLSTMs.py</url>
+          <line>8</line>
+          <option name="timeStamp" value="3" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="2" />
+      <option name="time" value="4" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -433,6 +470,11 @@
           <caret line="16" column="44" lean-forward="true" selection-start-line="16" selection-start-column="44" selection-end-line="16" selection-end-column="44" />
           <folding>
             <element signature="e#0#28#0" expanded="true" />
+            <element signature="e#403#1700#0" expanded="false" />
+            <element signature="e#1835#4321#0" expanded="false" />
+            <element signature="e#4414#7976#0" expanded="false" />
+            <element signature="e#8088#9773#0" expanded="false" />
+            <element signature="e#9893#13413#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -451,26 +493,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ForecastScripts/CallLSTMs.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="1" column="28" lean-forward="true" selection-start-line="1" selection-start-column="28" selection-end-line="1" selection-end-column="28" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ForecastScripts/LSTM_Models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="140">
-          <caret line="154" column="46" lean-forward="false" selection-start-line="154" selection-start-column="46" selection-end-line="154" selection-end-column="46" />
-          <folding>
-            <element signature="e#0#28#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ForecastScripts/prepareLSTMdata.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="158">
@@ -483,10 +505,162 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/ForecastScripts/getLSTMTrainingandTesting.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="221">
-          <caret line="16" column="44" lean-forward="false" selection-start-line="16" selection-start-column="44" selection-end-line="16" selection-end-column="44" />
+        <state relative-caret-position="1241">
+          <caret line="73" column="53" lean-forward="false" selection-start-line="73" selection-start-column="53" selection-end-line="73" selection-end-column="53" />
           <folding>
             <element signature="e#0#28#0" expanded="true" />
+            <element signature="e#403#1700#0" expanded="false" />
+            <element signature="e#1835#4321#0" expanded="false" />
+            <element signature="e#4414#7976#0" expanded="false" />
+            <element signature="e#8088#9773#0" expanded="false" />
+            <element signature="e#9893#13413#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ForecastScripts/CallLSTMs.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="18" lean-forward="true" selection-start-line="0" selection-start-column="18" selection-end-line="0" selection-end-column="18" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ForecastScripts/LSTM_Models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="129" column="76" lean-forward="false" selection-start-line="129" selection-start-column="76" selection-end-line="129" selection-end-column="76" />
+          <folding>
+            <element signature="e#0#28#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ForecastScripts/prepareLSTMdata.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1054">
+          <caret line="69" column="46" lean-forward="false" selection-start-line="69" selection-start-column="46" selection-end-line="69" selection-end-column="46" />
+          <folding>
+            <element signature="e#0#28#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ForecastScripts/CallLSTMs.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="3" column="0" lean-forward="true" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ForecastScripts/LSTM_Models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2618">
+          <caret line="154" column="46" lean-forward="false" selection-start-line="154" selection-start-column="46" selection-end-line="154" selection-end-column="46" />
+          <folding>
+            <element signature="e#0#28#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ForecastScripts/getLSTMTrainingandTesting.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="16" column="44" lean-forward="true" selection-start-line="16" selection-start-column="44" selection-end-line="16" selection-end-column="44" />
+          <folding>
+            <element signature="e#0#28#0" expanded="true" />
+            <element signature="e#403#1700#0" expanded="false" />
+            <element signature="e#1835#4321#0" expanded="false" />
+            <element signature="e#4414#7976#0" expanded="false" />
+            <element signature="e#8088#9773#0" expanded="false" />
+            <element signature="e#9893#13413#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ForecastScripts/getVentriclesAndADASData.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1447">
+          <caret line="11" column="28" lean-forward="false" selection-start-line="11" selection-start-column="28" selection-end-line="11" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ForecastScripts/getTimeSeries.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-257">
+          <caret line="17" column="28" lean-forward="false" selection-start-line="17" selection-start-column="28" selection-end-line="17" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ForecastScripts/getLSTMTrainingandTesting.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="74">
+          <caret line="54" column="127" lean-forward="false" selection-start-line="54" selection-start-column="127" selection-end-line="54" selection-end-column="127" />
+          <folding>
+            <element signature="e#0#28#0" expanded="true" />
+            <element signature="e#403#1700#0" expanded="false" />
+            <element signature="e#1835#4321#0" expanded="false" />
+            <element signature="e#4414#7976#0" expanded="false" />
+            <element signature="e#8088#9773#0" expanded="false" />
+            <element signature="e#9893#13413#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ForecastScripts/prepareLSTMdata.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="107">
+          <caret line="69" column="34" lean-forward="false" selection-start-line="69" selection-start-column="34" selection-end-line="69" selection-end-column="34" />
+          <folding>
+            <element signature="e#0#28#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ForecastScripts/CallLSTMs.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="9" column="76" lean-forward="true" selection-start-line="9" selection-start-column="76" selection-end-line="9" selection-end-column="76" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ForecastScripts/LSTM_Models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1239">
+          <caret line="130" column="23" lean-forward="false" selection-start-line="130" selection-start-column="23" selection-end-line="130" selection-end-column="23" />
+          <folding>
+            <element signature="e#0#28#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ForecastScripts/LSTMDX4.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="84">
+          <caret line="334" column="34" lean-forward="false" selection-start-line="334" selection-start-column="34" selection-end-line="334" selection-end-column="34" />
+          <folding>
+            <element signature="e#0#28#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ForecastScripts/LSTM_ModelsOld.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="120" column="49" lean-forward="true" selection-start-line="120" selection-start-column="49" selection-end-line="120" selection-end-column="49" />
+          <folding>
+            <element signature="e#0#28#0" expanded="true" />
+            <element signature="e#489#774#0" expanded="false" />
+            <element signature="e#816#1140#0" expanded="false" />
+            <element signature="e#1170#1223#0" expanded="false" />
           </folding>
         </state>
       </provider>
