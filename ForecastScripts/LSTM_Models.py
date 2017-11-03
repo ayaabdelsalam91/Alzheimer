@@ -11,13 +11,10 @@ from scipy.ndimage.interpolation import shift
 # np.set_printoptions(threshold='nan')
 
 
-def unison_shuffled_copies(a, b,c):
+def unison_shuffled_copies(a, b):
     assert len(a) == len(b)
-    assert len(a) == len(c)
     p = np.random.permutation(len(a))
-    return a[p], b[p] , c[p]
-
-
+    return a[p], b[p]
 
 
 def loss_function(y, outputs,seq_length , alpha):
@@ -162,7 +159,6 @@ def train_lstm(TargetName ,X_, Y_,Trainseq_length, TestData , Testseq_length,RID
 	loss = loss_function(y, rnn_outputs,seq_length,alpha)
 	y_Last = last_relevant(y, seq_length)
 	outputs_Last = last_relevant(rnn_outputs, seq_length)
-	outputs_Lastvariable = tf.identity(outputs_Last, name='outputs_Last')
 	accuracy = tf.reduce_mean(tf.abs(y_Last-outputs_Last))
 	MAE = tf.abs(y_Last-outputs_Last)
 	#optimizer optimzes loss
@@ -182,12 +178,9 @@ def train_lstm(TargetName ,X_, Y_,Trainseq_length, TestData , Testseq_length,RID
 		with tf.Session() as sess:
 			init.run()
 			for epoch in range(n_epochs):
-				old = seq_Train
-				X_train , Y_train, seq_Train = unison_shuffled_copies(X_train,Y_train,seq_Train)
-				#X_train, Y_train, wtf = unison_shuffled_copies(X_train, Y_train, seq_Train)
-				#print(old==seq_Train)
-				#print(wtf==seq_Train)
-				X_test , Y_test, seq_Test = unison_shuffled_copies(X_test,Y_test,seq_Test)
+
+				X_train , Y_train = unison_shuffled_copies(X_train,Y_train)
+				# X_test , Y_test,seq_Test = unison_shuffled_copies(X_test,Y_test,seq_Test)
 
 				sess.run(training_op, feed_dict={X: X_train, y: Y_train  ,  seq_length:seq_Train})
 				acc_train = accuracy.eval(feed_dict={X: X_train, y: Y_train  ,  seq_length:seq_Train})
@@ -206,35 +199,36 @@ def train_lstm(TargetName ,X_, Y_,Trainseq_length, TestData , Testseq_length,RID
 		with tf.Session() as sess:
 			init.run()
 			for epoch in range(n_epochs):
-				X_, Y_,Trainseq_length = unison_shuffled_copies(X_,Y_,Trainseq_length)
+				X_, Y_ = unison_shuffled_copies(X_,Y_)
 				sess.run(training_op, feed_dict={X: X_, y: Y_  ,  seq_length:Trainseq_length})
 				acc_train = accuracy.eval(feed_dict={X: X_, y: Y_  ,  seq_length:Trainseq_length})
-				print("Epoch", epoch, "Train MAE =", acc_train)
-			MAE_values = MAE.eval(feed_dict={X: X_, y: Y_  ,  seq_length:Trainseq_length})
-			interval_25 , interval_75 = get_interval(MAE_values)
+				MAE_values = MAE.eval(feed_dict={X: X_, y: Y_  ,  seq_length:Trainseq_length})
+				interval_25 , interval_75 = get_interval(MAE_values)
+				print("Epoch", epoch, "Train MAE =", acc_train ,"interval_25" ,interval_25 ,"interval_75" , interval_75 )
 			saver.save(sess, "./"+TargetName +"LSTM_model")
 
-			OutputZero = np.zeros((TestData.shape[0]*50, 4))
-			for i in range(TestData.shape[0]):
-				seq = np.array([Testseq_length[i]])
-				for j in range(50):
-					X_batch = TestData[i].reshape(1, 20, n_inputs)
-					y_pred = sess.run(outputs_Lastvariable, feed_dict={X: X_batch , seq_length:seq})
-				
-					OutputZero[i*50+j,0] = RID[i]
-					OutputZero[i*50+j,1] =  y_pred.flatten()[0]
-					OutputZero[i*50+j,2] =  y_pred.flatten()[0] - interval_25
-					OutputZero[i*50+j,3] =  y_pred.flatten()[0] + interval_75
-
-					if(seq[0]<20):
-						TestData[i , seq[0],0] =OutputZero[i*50+j,1] 
-						seq[0]+=1
-					else:
-						np.roll(TestData[i], -1, axis=0)
-						TestData[i] =np.roll(TestData[i], -1, axis=0)
-						TestData[i , -1,0] =  y_pred.flatten()[0]
-						for ind in range(1,n_inputs):
-							TestData[i , -1,ind] = 0
+			# OutputZero = np.zeros((TestData.shape[0]*50, 4))
+			# for i in range(2):
+			# 	seq = np.array([Testseq_length[i]])
+			# 	for j in range(50):
+			# 		print TestData[i]
+			# 		X_batch = TestData[i].reshape(1, 20, n_inputs)
+			# 		y_pred = sess.run(outputs_Last, feed_dict={X: X_batch , seq_length:seq})
+			# 		print i , j ,y_pred , interval_25 , interval_75
+			# 		OutputZero[i*50+j,0] = RID[i]
+			# 		OutputZero[i*50+j,1] =  y_pred.flatten()[0]
+			# 		OutputZero[i*50+j,2] =  y_pred.flatten()[0] - interval_25
+			# 		OutputZero[i*50+j,3] =  y_pred.flatten()[0] + interval_75
+					
+			# 		if(seq[0]<20):
+			# 			TestData[i , seq[0],0] =OutputZero[i*50+j,1] 
+			# 			seq[0]+=1
+			# 		else:
+			# 			np.roll(TestData[i], -1, axis=0)
+			# 			TestData[i] =np.roll(TestData[i], -1, axis=0)
+			# 			TestData[i , -1,0] =  y_pred.flatten()[0]
+			# 			for ind in range(1,n_inputs):
+			# 				TestData[i , -1,ind] = 0
 
 			df = DataFrame(OutputZero,columns=["RID" , TargetName , "-25" , "+75"])
 			df.to_csv('/Users/Tim/Desktop/Alzheimer/ForecastProcessed_data/'+TargetName+ 'LeaderboradOutputZeroPadding.csv',index=False)
@@ -244,14 +238,20 @@ def train_lstm(TargetName ,X_, Y_,Trainseq_length, TestData , Testseq_length,RID
 					seq = np.array([Testseq_length[i]])
 					for j in range(50):
 						X_batch = TestData[i].reshape(1, 20, n_inputs)
-						y_pred = sess.run(outputs_Lastvariable, feed_dict={X: X_batch , seq_length:seq})
+						y_pred = sess.run(outputs_Last, feed_dict={X: X_batch , seq_length:seq})
+						print i , j , y_pred.flatten()[0] , interval_25 , interval_75
 						OutputPersistence[i*50+j,0] = RID[i]
 						OutputPersistence[i*50+j,1] =  y_pred.flatten()[0]
-						OutputPersistence[i*50+j,2] =  y_pred.flatten()[0] - interval_25
+						if( (y_pred.flatten()[0] - interval_25) >0):
+							OutputPersistence[i*50+j,2] =  y_pred.flatten()[0] - interval_25
+						else:
+							OutputPersistence[i*50+j,2] =  y_pred.flatten()[0]
 						OutputPersistence[i*50+j,3] =  y_pred.flatten()[0] + interval_75
 
 						if(seq[0]<20):
 							TestData[i ,seq[0],0] =OutputPersistence[i*50+j,1]
+							for ind in range(1,n_inputs):
+								TestData[i , seq[0],ind] = TestData[i ,seq[0]-1,ind]
 							seq[0]+=1
 
 						else:
