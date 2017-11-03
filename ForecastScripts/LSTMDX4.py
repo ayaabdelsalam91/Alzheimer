@@ -16,6 +16,13 @@ def unison_shuffled_copies(a, b,c):
     return a[p], b[p] , c[p]
 
 
+def unison_shuffled_copiesFull(a, b,c,d,e):
+    assert len(a) == len(b)
+    assert len(a) == len(b)
+    p = np.random.permutation(len(a))
+    return a[p], b[p] , c[p] , d[p],e[p]
+
+
 
 
 def Map(input,step=19):
@@ -103,9 +110,11 @@ def mergeFiles(inFileDX ,  inFileCDRSB , inFileMMSE, isTesting=False):
 
 	if(not isTesting):
 
-		input = np.zeros((dataframeMMSE.shape[0] ,numberOfFeatures*19+2))
+		input = np.zeros((dataframeMMSE.shape[0] ,numberOfFeatures*19+4))
 		input[:,0] = dataframeDX[:,0]
-		input[:,-1] = dataframeDX[:,-1]
+		input[:,-3] = dataframeDX[:,-1]
+		input[:,-2] = dataframeCDRSB[:,-1]
+		input[:,-1] = dataframeMMSE[:,-1]
 		for i in range(0, input.shape[0]):
 			for step in range (19):
 				for DxFeature in range(int(numberOfFeaturesDx)):
@@ -124,7 +133,9 @@ def mergeFiles(inFileDX ,  inFileCDRSB , inFileMMSE, isTesting=False):
 				cols.append("CDRSB_"+str(CDRSBFeature)+str(i+1))
 			for MMSEFeature in range(int(numberOfFeaturesMMSE)):
 				cols.append("MMSE_"+str(MMSEFeature)+str(i+1))
-		cols.append("Target")
+		cols.append("DX_Target")
+		cols.append("CDRSB_Target")
+		cols.append("MMSE_Target")
 		# print "train col" ,  len(cols)
 	else:
 		input = np.zeros((dataframeMMSE.shape[0] ,numberOfFeatures*19+1))
@@ -178,8 +189,10 @@ def LSTMDX(TrainDX,TrainCDRSB, TrainMMSE , TestDX,TestCDRSB,TestMMSE , Validatio
 	numberOfFeatures=(TrainInfo.shape[1]-2)/19
 	#print numberOfFeatures , TrainDataframe.shape , TestDataframe.shape
 	################### Training Data ##############################
-	TrainOutput = TrainInfo[:,-1]
-	TrainData = TrainInfo[:,1:-1]
+	TrainOutput = TrainInfo[:,-3]
+	TrainOutputCDRSB = TrainInfo[:,-2]
+	TrainOutputMMSE = TrainInfo[:,-1]
+	TrainData = TrainInfo[:,1:-3]
 	Trainseq_length=[]
 	for i in range(TrainData.shape[0]):
 		seq=0
@@ -190,10 +203,16 @@ def LSTMDX(TrainDX,TrainCDRSB, TrainMMSE , TestDX,TestCDRSB,TestMMSE , Validatio
 	Trainseq_length = np.array(Trainseq_length)
 
 	CompleteTrainOutput = np.zeros((TrainOutput.shape[0],19,3))
+	CompleteTrainOutputCDRSB = np.zeros((TrainOutput.shape[0],19,1))
+	CompleteTrainOutputMMSE = np.zeros((TrainOutput.shape[0],19,1))
+	# TrainOutputCDRSB=TrainOutputCDRSB.reshape(TrainOutputCDRSB.shape[0],19,1)
+	# TrainOutputMMSE=TrainOutputMMSE.reshape(TrainOutputMMSE.shape[0],19,1)
 
 	for i in range (TrainOutput.shape[0]):
 		for j in range(Trainseq_length[i]):
 			CompleteTrainOutput[i,j,:] =(Map(TrainOutput[i]))
+			CompleteTrainOutputCDRSB [i,j,0]= TrainOutputCDRSB[i]
+			CompleteTrainOutputMMSE [i,j,0]= TrainOutputMMSE[i]
 	TrainData =  TrainData.reshape((int(TrainData.shape[0]), 19 ,int(numberOfFeatures) ))
 		################### Testing Data ##############################
 
@@ -225,10 +244,21 @@ def LSTMDX(TrainDX,TrainCDRSB, TrainMMSE , TestDX,TestCDRSB,TestMMSE , Validatio
 				testingIndex.append(i)
 		splits =  np.array([ trainingIndex ,  testingIndex])
 
-		train_lstm("DX" ,TrainData, CompleteTrainOutput,Trainseq_length, TestData , Testseq_length,RID , numberOfFeaturesDxTest ,  numberOfFeaturesCDRSBTest  ,  numberOfFeaturesMMSETest ,splits=splits)
+		train_lstm("DX" ,TrainData, CompleteTrainOutput,Trainseq_length, TestData , Testseq_length,RID , numberOfFeaturesDxTest ,  numberOfFeaturesCDRSBTest  ,  numberOfFeaturesMMSETest ,
+			splits=splits , CDRSB_ = TrainOutputCDRSB, MMSE_ = TrainOutputMMSE)
 	else:
-		train_lstm("DX" ,TrainData, CompleteTrainOutput,Trainseq_length, TestData , Testseq_length,RID  , numberOfFeaturesDxTest ,  numberOfFeaturesCDRSBTest  ,  numberOfFeaturesMMSETest )
+		train_lstm("DX" ,TrainData, CompleteTrainOutput,Trainseq_length, TestData , Testseq_length,RID  , numberOfFeaturesDxTest ,  numberOfFeaturesCDRSBTest  ,  numberOfFeaturesMMSETest
+		, CDRSB_ = TrainOutputCDRSB, MMSE_ = TrainOutputMMSE )
 
+
+def  getAUC2 (true , output):
+	correct = 0
+	for i in range(true.shape[0]):
+		#print true[i] , output[i], "true", np.argmax(true[i])+1 ,"predicted" , np.argmax(output[i])+1
+		print "true", np.argmax(true[i])+1 ,"predicted" , np.argmax(output[i])+1
+		if(np.argmax(true[i]) ==    np.argmax(output[i])):
+			correct+=1
+	return float(correct)/true.shape[0]
 
 def  getAUC (true , output):
 	correct = 0
@@ -242,19 +272,21 @@ def getPrediction(output):
 	return np.argmax(output)+1
 
 def train_lstm(TargetName ,X_, Y_,Trainseq_length, TestData , Testseq_length,RID, 
-				numberOfFeaturesDxTest ,  numberOfFeaturesCDRSBTest  ,  numberOfFeaturesMMSETest ,splits=None,
-				learning_rate = 0.1 ,n_neurons=64, n_layers = 1 , alpha=0.2,n_epochs=300 , dropoutKeepProb=0.8):
+				numberOfFeaturesDxTest ,  numberOfFeaturesCDRSBTest  ,  numberOfFeaturesMMSETest ,splits=None, CDRSB_=None ,  MMSE_=None,
+				learning_rate = 0.05 ,n_neurons=64, n_layers = 2 , alpha=0.15,n_epochs=200,dropoutKeepProb=1.0):
+				# learning_rate = 0.05 ,n_neurons=64, n_layers = 2 , alpha=0.2,n_epochs=200 , dropoutKeepProb=0.8):
 	#Number of steps is the number of timeseries in this case its 5 2-1,3-2,4-3,5-4 and 6-5
 	n_steps = Y_.shape[1]
 	n_inputs = X_.shape[2]
 	n_outputs = Y_.shape[2]
 	num_classes=3
 
-
+	seq_length = tf.placeholder(tf.int32, [None])
 	X = tf.placeholder(tf.float32, [None, n_steps, n_inputs])
 	y = tf.placeholder(tf.float32, [None, n_steps, n_outputs])
-	seq_length = tf.placeholder(tf.int32, [None])
-	batch_size = tf.shape(X[0])[0]
+	CDRSB = tf.placeholder(tf.float32, [None])
+	MMSE = tf.placeholder(tf.float32, [None])
+	
 
 
 
@@ -290,7 +322,12 @@ def train_lstm(TargetName ,X_, Y_,Trainseq_length, TestData , Testseq_length,RID
 	last_logits = last_relevant(logits, seq_length)
 	preds = tf.nn.softmax(last_logits)
 
-	loss = 	loss_function(y, logits,seq_length , alpha)
+	xentropyloss = 	loss_function(y, logits,seq_length , alpha)
+	print "last_rnn_output" , last_rnn_output
+	MAECDRSB = tf.reduce_mean(tf.abs(last_rnn_output[:,-2] -CDRSB ))
+	MAEMMSE = tf.reduce_mean(tf.abs(last_rnn_output[:,-1] -MMSE ))
+
+	loss = xentropyloss + 0.1*MAECDRSB+0.05*MAEMMSE
 	
 
 	optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
@@ -310,60 +347,99 @@ def train_lstm(TargetName ,X_, Y_,Trainseq_length, TestData , Testseq_length,RID
 		Y_test =  Y_[splits[1]]
 		seq_Train = Trainseq_length[splits[0]]
 		seq_Test =  Trainseq_length[splits[1]]
+		CDRSB_Train= CDRSB_[splits[0]]
+		CDRSB_Test= CDRSB_[splits[1]]
+		MMSE_Train= MMSE_[splits[0]]
+		MMSE_Test= MMSE_[splits[1]]
+
 		with tf.Session() as sess:
 			init.run()
 			for epoch in range(n_epochs):
-				#X_train , Y_train , seq_Train = unison_shuffled_copies(X_train,Y_train,seq_Train)
-				X_train, Y_train, wtf = unison_shuffled_copies(X_train, Y_train, seq_Train)
-				#X_test , Y_test , seq_Test= unison_shuffled_copies(X_test,Y_test,seq_Test)
 
-				sess.run(training_op, feed_dict={X: X_train, y: Y_train  ,  seq_length:seq_Train})
-				last_y_ = last_y.eval(feed_dict={X: X_train, y: Y_train  ,  seq_length:seq_Train})
-
-				prediction  = preds.eval( feed_dict={X: X_train, y: Y_train  ,  seq_length:seq_Train})
+				X_train , Y_train , seq_Train,CDRSB_Train , MMSE_Train = unison_shuffled_copiesFull(X_train,Y_train,seq_Train,CDRSB_Train , MMSE_Train )
+				X_test , Y_test , seq_Test,CDRSB_Test , MMSE_Test = unison_shuffled_copiesFull(X_test,Y_test,seq_Test,CDRSB_Test , MMSE_Test )
+				sess.run(training_op, feed_dict={X: X_train, y: Y_train  ,  seq_length:seq_Train,CDRSB:CDRSB_Train , MMSE:MMSE_Train})
+				
+				last_y_ = last_y.eval(feed_dict={X: X_train, y: Y_train  ,  seq_length:seq_Train,CDRSB:CDRSB_Train , MMSE:MMSE_Train})
+				prediction  = preds.eval( feed_dict={X: X_train, y: Y_train  ,  seq_length:seq_Train,CDRSB:CDRSB_Train , MMSE:MMSE_Train})
 				acc_train = getAUC(last_y_ , prediction)
+				
+				train_CDRSB = MAECDRSB.eval( feed_dict={X: X_train, y: Y_train  ,  seq_length:seq_Train,CDRSB:CDRSB_Train , MMSE:MMSE_Train})
+				train_mmse = MAEMMSE.eval( feed_dict={X: X_train, y: Y_train  ,  seq_length:seq_Train,CDRSB:CDRSB_Train , MMSE:MMSE_Train})
 
-
-				last_y_Test = last_y.eval(feed_dict={X: X_test, y: Y_test,  seq_length:seq_Test})
-				prediction_test = preds.eval(feed_dict={X: X_test, y: Y_test,  seq_length:seq_Test})
+				last_y_Test = last_y.eval(feed_dict={X: X_test, y: Y_test,  seq_length:seq_Test,CDRSB:CDRSB_Test, MMSE:MMSE_Test})
+				prediction_test = preds.eval(feed_dict={X: X_test, y: Y_test,  seq_length:seq_Test,CDRSB:CDRSB_Test, MMSE:MMSE_Test})
 				acc_test = getAUC(last_y_Test , prediction_test)
-				xentropy_train = loss.eval(feed_dict={X: X_train, y: Y_train  ,  seq_length:seq_Train})
-				xentropy_test = loss.eval(feed_dict={X: X_test, y: Y_test,  seq_length:seq_Test})
+				
+				test_CDRSB = MAECDRSB.eval( feed_dict={X: X_test, y: Y_test  ,  seq_length:seq_Test,CDRSB:CDRSB_Test, MMSE:MMSE_Test})
+				test_mmse = MAEMMSE.eval( feed_dict={X: X_test, y: Y_test  ,  seq_length:seq_Test,CDRSB:CDRSB_Test, MMSE:MMSE_Test})
+
+				xentropy_train = xentropyloss.eval(feed_dict={X: X_train, y: Y_train  ,  seq_length:seq_Train,CDRSB:CDRSB_Train , MMSE:MMSE_Train})
+				xentropy_test = xentropyloss.eval(feed_dict={X: X_test, y: Y_test,  seq_length:seq_Test , seq_length:seq_Test,CDRSB:CDRSB_Test, MMSE:MMSE_Test})
+
 				print("Epoch", epoch, "Train AUC =", acc_train, "Test AUC=", acc_test ,  "Train xentropy =", xentropy_train, "Test xentropy=", xentropy_test)
+				print("Train MAE CDRSB =", train_CDRSB, "Test MAE CDRSB =", test_CDRSB , "Train MAE MMSE =", train_mmse, "Test MAE MMSE =", test_mmse)
+			# getAUC2(last_y_Test , prediction_test)
 			saver.save(sess, "./"+TargetName +"LSTM_model_withValidation")
 	else:
 		with tf.Session() as sess:
 			init.run()
 			for epoch in range(n_epochs):
-				X_, Y_, Trainseq_length = unison_shuffled_copies(X_,Y_,Trainseq_length)
-				sess.run(training_op, feed_dict={X: X_, y: Y_  ,  seq_length:Trainseq_length})
-				last_y_ = last_y.eval( feed_dict={X: X_, y: Y_  ,  seq_length:Trainseq_length})
-				prediction  = preds.eval(  feed_dict={X: X_, y: Y_  ,  seq_length:Trainseq_length})
+				X_, Y_, Trainseq_length , CDRSB_, MMSE_ = unison_shuffled_copiesFull(X_,Y_,Trainseq_length , CDRSB_, MMSE_)
+				sess.run(training_op, feed_dict={X: X_, y: Y_  ,  seq_length:Trainseq_length,CDRSB:CDRSB_, MMSE:MMSE_})
+				last_y_ = last_y.eval( feed_dict={X: X_, y: Y_  ,  seq_length:Trainseq_length,CDRSB:CDRSB_, MMSE:MMSE_})
+				prediction  = preds.eval(  feed_dict={X: X_, y: Y_  ,  seq_length:Trainseq_length,CDRSB:CDRSB_, MMSE:MMSE_})
 				acc_train = getAUC(last_y_ , prediction)
-				xentropy_train = loss.eval( feed_dict={X: X_, y: Y_  ,  seq_length:Trainseq_length})
+				xentropy_train = xentropyloss.eval( feed_dict={X: X_, y: Y_  ,  seq_length:Trainseq_length,CDRSB:CDRSB_, MMSE:MMSE_})
+				
+				train_CDRSB = MAECDRSB.eval(  feed_dict={X: X_, y: Y_  ,  seq_length:Trainseq_length,CDRSB:CDRSB_, MMSE:MMSE_})
+				train_mmse = MAEMMSE.eval(  feed_dict={X: X_, y: Y_  ,  seq_length:Trainseq_length,CDRSB:CDRSB_, MMSE:MMSE_})
+
 				print("Epoch", epoch, "Train AUC =", acc_train ,  "Train xentropy =", xentropy_train)
+				print("Train MAE CDRSB =", train_CDRSB, "Train MAE MMSE =", train_mmse)
 			saver.save(sess, "./"+TargetName +"LSTM_model")
 
 			
-			OutputZero = np.zeros((TestData.shape[0]*50, 4))
+			OutputPersistence = np.zeros((TestData.shape[0]*50, 4))
 
 			for i in range(TestData.shape[0]):
 				seq = np.array([Testseq_length[i]])
+				tempseq = seq
+				tempseq[0] = tempseq[0]-1
+				temp = TestData[i].reshape(1, 19, n_inputs)
+				label = TestData[i ,tempseq[0],0]
+				Feaure1= TestData[i ,tempseq[0],1]
+				temp[0 ,tempseq[0],0]=0
+				temp[0 ,tempseq[0],1]=0
+				last_rnn_output_=last_rnn_output.eval(feed_dict={X: temp , seq_length:tempseq})
+				TestData[i ,tempseq[0],2] = last_rnn_output_.flatten()[1]
+				TestData[i ,tempseq[0],2+numberOfFeaturesCDRSBTest] = last_rnn_output_.flatten()[2]
+				indxbefore =  tempseq[0]-1
+				for ind in range(1,n_inputs):
+					if(ind!=1 and ind!=2 and ind!=2+numberOfFeaturesCDRSBTest):
+						TestData[i ,tempseq[0],ind] = TestData[i ,indxbefore,ind]
+				TestData[i ,tempseq[0],0] = label
+				TestData[i ,tempseq[0],1] = Feaure1
 				for j in range(50):
 					X_batch = TestData[i].reshape(1, 19, n_inputs)
 					y_pred = sess.run(preds, feed_dict={X: X_batch , seq_length:seq})
 					last_rnn_output_=last_rnn_output.eval(feed_dict={X: X_batch , seq_length:seq})
 					newlabel = getPrediction( y_pred.flatten())
-					OutputZero[i*50+j,0] = RID[i]
-					OutputZero[i*50+j,1] =  y_pred.flatten()[0]
-					OutputZero[i*50+j,2] =  y_pred.flatten()[1]
-					OutputZero[i*50+j,3] =  y_pred.flatten()[2]
+					print i, j ,  "newlabel", newlabel
+					OutputPersistence[i*50+j,0] = RID[i]
+					OutputPersistence[i*50+j,1] =  y_pred.flatten()[0]
+					OutputPersistence[i*50+j,2] =  y_pred.flatten()[1]
+					OutputPersistence[i*50+j,3] =  y_pred.flatten()[2]
 
 					if(seq[0]<19):
 						TestData[i ,seq[0],0] =newlabel
 						TestData[i ,seq[0],1] =  TestData[i ,seq[0]-1,1]
 						TestData[i ,seq[0],2] = last_rnn_output_.flatten()[1]
 						TestData[i ,seq[0],2+numberOfFeaturesCDRSBTest] = last_rnn_output_.flatten()[2]
+						indxbefore = seq[0] -1
+						for ind in range(1,n_inputs):
+							if(ind!=1 and ind!=2 and ind!=2+numberOfFeaturesCDRSBTest):
+								TestData[i ,seq[0],ind] = TestData[i ,indxbefore,ind]
 						seq[0]+=1
 
 					else:
@@ -375,43 +451,9 @@ def train_lstm(TargetName ,X_, Y_,Trainseq_length, TestData , Testseq_length,RID
 						TestData[i ,-1,2+numberOfFeaturesCDRSBTest] = last_rnn_output_.flatten()[2]
 						for ind in range(1,n_inputs):
 							if(ind!=1 and ind!=2 and ind!=2+numberOfFeaturesCDRSBTest):
-								TestData[i , -1,ind] = 0
+								TestData[i , -1,ind] = TestData[i ,-2,ind]
+				
 
-			df = DataFrame(OutputZero,columns=["RID" , "CN" , "MCI" , "AD"])
-			df.to_csv('/Users/Tim/Desktop/Alzheimer/ForecastProcessed_data/DXLeaderboradOutputZeroPadding.csv',index=False)
-			OutputPersistence = np.zeros((TestData.shape[0]*50, 4))
-			for i in range(TestData.shape[0]):
-					seq = np.array([Testseq_length[i]])
-					for j in range(50):
-						X_batch = TestData[i].reshape(1, 19, n_inputs)
-						y_pred = sess.run(preds, feed_dict={X: X_batch , seq_length:seq})
-						last_rnn_output_=last_rnn_output.eval(feed_dict={X: X_batch , seq_length:seq})
-						newlabel = getPrediction( y_pred.flatten())
-						OutputPersistence[i*50+j,0] = RID[i]
-						OutputPersistence[i*50+j,1] =  y_pred.flatten()[0]
-						OutputPersistence[i*50+j,2] =  y_pred.flatten()[1]
-						OutputPersistence[i*50+j,3] =  y_pred.flatten()[2]
-
-						if(seq[0]<19):
-							TestData[i ,seq[0],0] =newlabel
-							TestData[i ,seq[0],1] =  TestData[i ,seq[0]-1,1]
-							TestData[i ,seq[0],2] = last_rnn_output_.flatten()[1]
-							TestData[i ,seq[0],2+numberOfFeaturesCDRSBTest] = last_rnn_output_.flatten()[2]
-							for ind in range(1,n_inputs):
-								if(ind!=1 and ind!=2 and ind!=2+numberOfFeaturesCDRSBTest):
-									TestData[i , -1,ind] = TestData[i ,-2,ind]
-							seq[0]+=1
-
-						else:
-							np.roll(TestData[i], -1, axis=0)
-							TestData[i] =np.roll(TestData[i], -1, axis=0)
-							TestData[i , -1,0] = newlabel
-							TestData[i ,-1,1] =  TestData[i ,-2,1]
-							TestData[i ,-1,2] = last_rnn_output_.flatten()[1]
-							TestData[i ,-1,2+numberOfFeaturesCDRSBTest] = last_rnn_output_.flatten()[2]
-							for ind in range(1,n_inputs):
-								if(ind!=1 and ind!=2 and ind!=2+numberOfFeaturesCDRSBTest):
-									TestData[i , -1,ind] = TestData[i ,-2,ind]
 			df = DataFrame(OutputPersistence,columns=["RID" , "CN" , "MCI" , "AD"])
 			df.to_csv('/Users/Tim/Desktop/Alzheimer/ForecastProcessed_data/DXLeaderboradOutputPersistence.csv',index=False)
 
