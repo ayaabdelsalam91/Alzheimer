@@ -10,11 +10,13 @@ from scipy.ndimage.interpolation import shift
 
 # np.set_printoptions(threshold='nan')
 
+path = '/Users/Tim/Desktop/Alzheimer/ForecastProcessed_data/'
 
-def unison_shuffled_copies(a, b):
+
+def unison_shuffled_copies(a, b, c):
     assert len(a) == len(b)
     p = np.random.permutation(len(a))
-    return a[p], b[p]
+    return a[p], b[p], c[p]
 
 
 def loss_function(y, outputs,seq_length , alpha):
@@ -44,10 +46,10 @@ def get_interval(MAE):
 
 def LSTM(TargetName , TrainInputFile , TestInputFile, Validation=False):
 
-	Traindata = '/Users/Tim/Desktop/Alzheimer/ForecastProcessed_data/'+TrainInputFile+'.csv'
+	Traindata = path+TrainInputFile+'.csv'
 	Traindataframe = read_csv(Traindata, names=None)
 	TrainInfo = Traindataframe.values
-	Testdata = '/Users/Tim/Desktop/Alzheimer/ForecastProcessed_data/'+TestInputFile+'.csv'
+	Testdata = path+TestInputFile+'.csv'
 	Testdataframe = read_csv(Testdata, names=None)
 	TestInfo =  Testdataframe.values
 	numberOfFeatures=0
@@ -125,7 +127,7 @@ def LSTM(TargetName , TrainInputFile , TestInputFile, Validation=False):
 
 
 def train_lstm(TargetName ,X_, Y_,Trainseq_length, TestData , Testseq_length,RID ,splits=None,
-	learning_rate = 0.2 ,n_neurons=64, n_layers = 2 , alpha=0.15,n_epochs=300,dropoutKeepProb=1.0):
+	learning_rate = 0.05 ,n_neurons=64, n_layers = 2 , alpha=0.15,n_epochs=2,dropoutKeepProb=1.0):
 	#Number of steps is the number of timeseries in this case its 5 2-1,3-2,4-3,5-4 and 6-5
 	n_steps = Y_.shape[1]
 	n_inputs = X_.shape[2]
@@ -179,7 +181,7 @@ def train_lstm(TargetName ,X_, Y_,Trainseq_length, TestData , Testseq_length,RID
 			init.run()
 			for epoch in range(n_epochs):
 
-				X_train , Y_train = unison_shuffled_copies(X_train,Y_train)
+				X_train , Y_train, seq_Train = unison_shuffled_copies(X_train,Y_train, seq_Train)
 				# X_test , Y_test,seq_Test = unison_shuffled_copies(X_test,Y_test,seq_Test)
 
 				sess.run(training_op, feed_dict={X: X_train, y: Y_train  ,  seq_length:seq_Train})
@@ -193,17 +195,58 @@ def train_lstm(TargetName ,X_, Y_,Trainseq_length, TestData , Testseq_length,RID
 				#print(X_train,np.count_nonzero(seq_Test),np.size(seq_Test), (seq_Test==0).sum(), seq_Train)
 				#print (acc_testy_Last ,acc_testACC )
 			MAE_values = MAE.eval(feed_dict={X: X_train, y: Y_train  ,  seq_length:seq_Train})
-			iterval_25 , interval_75 = get_interval(MAE_values)
+			interval_25 , interval_75 = get_interval(MAE_values)
+			MAE = np.mean(MAE_values)
+			interval_25, interval75 = MAE - interval_25, interval_75 - MAE
+			print(interval_25,interval_75)
 			saver.save(sess, "./"+TargetName +"LSTM_model_withValidation")
+
+			OutputPersistence = np.zeros((TestData.shape[0] * 50, 4))
+			for i in range(TestData.shape[0]):
+				seq = np.array([Testseq_length[i]])
+				for j in range(50):
+					X_batch = TestData[i].reshape(1, 20, n_inputs)
+					y_pred = sess.run(outputs_Last, feed_dict={X: X_batch, seq_length: seq})
+					# print i , j , y_pred.flatten()[0] , interval_25 , interval_75
+					OutputPersistence[i * 50 + j, 0] = RID[i]
+					OutputPersistence[i * 50 + j, 1] = y_pred.flatten()[0]
+					if ((y_pred.flatten()[0] - interval_25) > 0):
+						OutputPersistence[i * 50 + j, 2] = y_pred.flatten()[0] - interval_25
+					else:
+						OutputPersistence[i * 50 + j, 2] = y_pred.flatten()[0]
+					OutputPersistence[i * 50 + j, 3] = y_pred.flatten()[0] + interval_75
+
+					if (seq[0] < 20):
+						TestData[i, seq[0], 0] = OutputPersistence[i * 50 + j, 1]
+						for ind in range(1, n_inputs):
+							TestData[i, seq[0], ind] = TestData[i, seq[0] - 1, ind]
+						seq[0] += 1
+
+					else:
+						np.roll(TestData[i], -1, axis=0)
+						TestData[i] = np.roll(TestData[i], -1, axis=0)
+						TestData[i, -1, 0] = OutputPersistence[i * 50 + j, 1]
+						for ind in range(1, n_inputs):
+							TestData[i, -1, ind] = TestData[i, -2, ind]
+			df = DataFrame(OutputPersistence, columns=["RID", TargetName, "-25", "+75"])
+			df.to_csv(
+				path + TargetName + 'LeaderboardOutputPersistence_Validation.csv',
+				index=False)
 	else:
 		with tf.Session() as sess:
 			init.run()
 			for epoch in range(n_epochs):
-				X_, Y_ = unison_shuffled_copies(X_,Y_)
+				X_, Y_,Trainseq_length = unison_shuffled_copies(X_,Y_,Trainseq_length)
+				#X_, Y_ = unison_shuffled_copies(X_, Y_)
+
 				sess.run(training_op, feed_dict={X: X_, y: Y_  ,  seq_length:Trainseq_length})
 				acc_train = accuracy.eval(feed_dict={X: X_, y: Y_  ,  seq_length:Trainseq_length})
 				MAE_values = MAE.eval(feed_dict={X: X_, y: Y_  ,  seq_length:Trainseq_length})
 				interval_25 , interval_75 = get_interval(MAE_values)
+				print(interval_25,interval_75)
+				trueMAE = np.mean(MAE_values)
+				print("MAE ", trueMAE)
+				interval_25,interval_75 = trueMAE-interval_25,interval_75-trueMAE
 				print("Epoch", epoch, "Train MAE =", acc_train ,"interval_25" ,interval_25 ,"interval_75" , interval_75 )
 			saver.save(sess, "./"+TargetName +"LSTM_model")
 
@@ -230,8 +273,8 @@ def train_lstm(TargetName ,X_, Y_,Trainseq_length, TestData , Testseq_length,RID
 			# 			for ind in range(1,n_inputs):
 			# 				TestData[i , -1,ind] = 0
 
-			df = DataFrame(OutputZero,columns=["RID" , TargetName , "-25" , "+75"])
-			df.to_csv('/Users/Tim/Desktop/Alzheimer/ForecastProcessed_data/'+TargetName+ 'LeaderboradOutputZeroPadding.csv',index=False)
+			#df = DataFrame(OutputZero,columns=["RID" , TargetName , "-25" , "+75"])
+			#df.to_csv('/Users/Tim/Desktop/Alzheimer/ForecastProcessed_data/'+TargetName+ 'LeaderboradOutputZeroPadding.csv',index=False)
 			
 			OutputPersistence = np.zeros((TestData.shape[0]*50, 4))
 			for i in range(TestData.shape[0]):
@@ -239,7 +282,7 @@ def train_lstm(TargetName ,X_, Y_,Trainseq_length, TestData , Testseq_length,RID
 					for j in range(50):
 						X_batch = TestData[i].reshape(1, 20, n_inputs)
 						y_pred = sess.run(outputs_Last, feed_dict={X: X_batch , seq_length:seq})
-						print i , j , y_pred.flatten()[0] , interval_25 , interval_75
+						#print i , j , y_pred.flatten()[0] , interval_25 , interval_75
 						OutputPersistence[i*50+j,0] = RID[i]
 						OutputPersistence[i*50+j,1] =  y_pred.flatten()[0]
 						if( (y_pred.flatten()[0] - interval_25) >0):
@@ -261,9 +304,9 @@ def train_lstm(TargetName ,X_, Y_,Trainseq_length, TestData , Testseq_length,RID
 							for ind in range(1,n_inputs):
 								TestData[i , -1,ind] = TestData[i ,-2,ind]
 			df = DataFrame(OutputPersistence,columns=["RID" , TargetName , "-25" , "+75"])
-			df.to_csv('/Users/Tim/Desktop/Alzheimer/ForecastProcessed_data/'+TargetName+ 'LeaderboradOutputPersistence.csv',index=False)
+			df.to_csv(path+TargetName+ 'LeaderboradOutputPersistence.csv',index=False)
 	df = DataFrame(MAE_values,columns=["MAE"])
-	df.to_csv('/Users/Tim/Desktop/Alzheimer/ForecastProcessed_data/TrainingMAE.csv',index=False)
+	df.to_csv(path+'TrainingMAE.csv',index=False)
 
 
 

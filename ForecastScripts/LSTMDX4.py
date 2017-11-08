@@ -255,7 +255,7 @@ def  getAUC2 (true , output):
 	correct = 0
 	for i in range(true.shape[0]):
 		#print true[i] , output[i], "true", np.argmax(true[i])+1 ,"predicted" , np.argmax(output[i])+1
-		print "true", np.argmax(true[i])+1 ,"predicted" , np.argmax(output[i])+1
+		#print "true", np.argmax(true[i])+1 ,"predicted" , np.argmax(output[i])+1
 		if(np.argmax(true[i]) ==    np.argmax(output[i])):
 			correct+=1
 	return float(correct)/true.shape[0]
@@ -323,7 +323,7 @@ def train_lstm(TargetName ,X_, Y_,Trainseq_length, TestData , Testseq_length,RID
 	preds = tf.nn.softmax(last_logits)
 
 	xentropyloss = 	loss_function(y, logits,seq_length , alpha)
-	print "last_rnn_output" , last_rnn_output
+	#print "last_rnn_output" , last_rnn_output
 	MAECDRSB = tf.reduce_mean(tf.abs(last_rnn_output[:,-2] -CDRSB ))
 	MAEMMSE = tf.reduce_mean(tf.abs(last_rnn_output[:,-1] -MMSE ))
 
@@ -425,7 +425,7 @@ def train_lstm(TargetName ,X_, Y_,Trainseq_length, TestData , Testseq_length,RID
 					y_pred = sess.run(preds, feed_dict={X: X_batch , seq_length:seq})
 					last_rnn_output_=last_rnn_output.eval(feed_dict={X: X_batch , seq_length:seq})
 					newlabel = getPrediction( y_pred.flatten())
-					print i, j ,  "newlabel", newlabel
+					#print i, j ,  "newlabel", newlabel
 					OutputPersistence[i*50+j,0] = RID[i]
 					OutputPersistence[i*50+j,1] =  y_pred.flatten()[0]
 					OutputPersistence[i*50+j,2] =  y_pred.flatten()[1]

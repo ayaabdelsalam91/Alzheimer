@@ -1,2 +1,2 @@
-model_checkpoint_path: "DXLSTM_model"
-all_model_checkpoint_paths: "DXLSTM_model"
+model_checkpoint_path: "ADAS13LSTM_model"
+all_model_checkpoint_paths: "ADAS13LSTM_model"

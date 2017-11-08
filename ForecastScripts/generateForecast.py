@@ -4,38 +4,39 @@ from pandas import read_csv, DataFrame , to_datetime
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 
-
-data ='/Users/aya/Documents/Research/Alzheimer/tadpole_challenge/ForecastProcessed_data/ToForecast.csv'
+path = '/Users/Tim/Desktop/Alzheimer/'
+data =path+'ForecastProcessed_data/ToForecast.csv'
 dataframe = read_csv(data, names=None)
 dataframe['EXAMDATE'] = to_datetime(dataframe['EXAMDATE'])
 info=dataframe.values
 
-dataDX ='/Users/aya/Documents/Research/Alzheimer/tadpole_challenge/ForecastProcessed_data/DXLeaderboradOutputPersistence.csv'
+dataDX =path+'ForecastProcessed_data/DXLeaderboradOutputPersistence.csv'
 dataframeDX = read_csv(dataDX, names=None)
 infoDX=dataframeDX.values
 
-dataADAS13 ='/Users/aya/Documents/Research/Alzheimer/tadpole_challenge/ForecastProcessed_data/ADAS13LeaderboradOutputPersistence.csv'
+dataADAS13 =path+'ForecastProcessed_data/ADAS13LeaderboradOutputPersistence.csv'
+#dataADAS13 =path+'ForecastProcessed_data/ADAS13LeaderboardOutputPersistence_Validation.csv'
 dataframeADAS13 = read_csv(dataADAS13, names=None)
 infoADAS13=dataframeADAS13.values
 
-dataVentricles ='/Users/aya/Documents/Research/Alzheimer/tadpole_challenge/ForecastProcessed_data/VentriclesLeaderboradOutputPersistence.csv'
+dataVentricles =path+'ForecastProcessed_data/VentriclesLeaderboradOutputPersistence.csv'
 dataframeVentricles = read_csv(dataVentricles, names=None)
 infoVentricles=dataframeVentricles.values
 
-LeaderBoradTemplate ='/Users/aya/Documents/Research/Alzheimer/tadpole_challenge/ForecastProcessed_data/TADPOLE_Submission_Leaderboard_TeamName.csv'
+LeaderBoradTemplate =path+'ForecastProcessed_data/TADPOLE_Submission_Leaderboard_TeamName.csv'
 LeaderBoradTemplateDF = read_csv(LeaderBoradTemplate, names=None)
 
 
 
-dataDXLB ='/Users/aya/Documents/Research/Alzheimer/tadpole_challenge/ForecastProcessed_data/DXFeaturesForecastLeaderBoard.csv'
+dataDXLB =path+'ForecastProcessed_data/DXFeaturesForecastLeaderBoard.csv'
 dataframeDXLB = read_csv(dataDXLB, names=None)
 infoDXLB=dataframeDXLB.values
 
-dataADAS13LB ='/Users/aya/Documents/Research/Alzheimer/tadpole_challenge/ForecastProcessed_data/ADAS13FeaturesForecastLeaderBoard.csv'
+dataADAS13LB =path+'ForecastProcessed_data/ADAS13FeaturesForecastLeaderBoard.csv'
 dataframeADAS13LB = read_csv(dataADAS13LB, names=None)
 infoADAS13LB=dataframeADAS13LB.values
 
-dataVentriclesLB ='/Users/aya/Documents/Research/Alzheimer/tadpole_challenge/ForecastProcessed_data/VentriclesFeaturesForecastLeaderBoard.csv'
+dataVentriclesLB =path+'ForecastProcessed_data/VentriclesFeaturesForecastLeaderBoard.csv'
 dataframeVentriclesLB = read_csv(dataVentriclesLB, names=None)
 infoVentriclesLB=dataframeVentriclesLB.values
 
@@ -268,6 +269,6 @@ for i in range(1,infoLB.shape[0]):
 
 
 df=DataFrame(infoLB, columns=LeaderBoradTemplateDF.columns.values)
-df.to_csv('/Users/aya/Documents/Research/Alzheimer/tadpole_challenge/ForecastProcessed_data/TADPOLE_Submission_Leaderboard_BravoLab.csv',index=False)
+df.to_csv(path+'/ForecastProcessed_data/TADPOLE_Submission_Leaderboard_BravoLab.csv',index=False)
 
 
