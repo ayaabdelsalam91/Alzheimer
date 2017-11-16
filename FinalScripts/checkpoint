@@ -1,0 +1,2 @@
+model_checkpoint_path: "DXLSTM_model"
+all_model_checkpoint_paths: "DXLSTM_model"
