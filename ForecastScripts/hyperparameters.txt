@@ -11,3 +11,7 @@ Ventricles:
 	epochs: 300
 	layers: 3
 	neurons: 32
+
+
+
+
